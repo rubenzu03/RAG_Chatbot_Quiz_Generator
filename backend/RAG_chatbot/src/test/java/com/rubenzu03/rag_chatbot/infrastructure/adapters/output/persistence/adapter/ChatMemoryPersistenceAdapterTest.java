@@ -1,7 +1,11 @@
 package com.rubenzu03.rag_chatbot.infrastructure.adapters.output.persistence.adapter;
 
-import com.rubenzu03.rag_chatbot.domain.dto.ChatResponse;
-import com.rubenzu03.rag_chatbot.infrastructure.adapters.output.persistence.ChatMemoryRepository;
+import com.rubenzu03.rag_chatbot.domain.dto.ChatHistoryMessage;
+import com.rubenzu03.rag_chatbot.infrastructure.security.ChatHistoryEncryptionService;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,56 +25,67 @@ class ChatMemoryPersistenceAdapterTest {
     private ChatMemoryPersistenceAdapter adapter;
 
     @Mock
-    private ChatMemoryRepository chatMemoryRepository;
+    private JdbcChatMemoryRepository chatMemoryRepository;
+
+    @Mock
+    private ChatMemory chatMemory;
+
+    @Mock
+    private ChatHistoryEncryptionService encryptionService;
 
     @BeforeEach
     void setUp() {
-        adapter = new ChatMemoryPersistenceAdapter(chatMemoryRepository);
+        adapter = new ChatMemoryPersistenceAdapter(chatMemoryRepository, chatMemory, encryptionService);
     }
 
     @Test
     void testDeleteAllHistory() {
+        when(chatMemoryRepository.findConversationIds()).thenReturn(List.of("conv-1", "conv-2"));
+
         adapter.deleteAllHistory();
-        verify(chatMemoryRepository).deleteAll();
+
+        verify(chatMemoryRepository).deleteByConversationId("conv-1");
+        verify(chatMemoryRepository).deleteByConversationId("conv-2");
     }
 
     @Test
     void testDeleteHistoryById() {
         String userId = "user123";
         adapter.deleteHistoryById(userId);
-        verify(chatMemoryRepository).deleteByUserId(userId);
+        verify(chatMemoryRepository).deleteByConversationId(userId);
     }
 
     @Test
     void testGetHistoryWithValidUserId() {
         String userId = "user456";
-        List<ChatResponse> expectedHistory = List.of(
-                new ChatResponse("Hi there", userId),
-                new ChatResponse("How are you?", userId)
-        );
-        when(chatMemoryRepository.getChatHistoryByUserId(userId)).thenReturn(expectedHistory);
-        List<ChatResponse> result = adapter.getHistory(userId);
+        when(chatMemory.get(userId)).thenReturn(List.of(
+            new UserMessage("Hi there"),
+            new AssistantMessage("How are you?")));
+
+        List<ChatHistoryMessage> result = adapter.getHistory(userId);
 
         assertThat(result).hasSize(2);
-        assertThat(result).containsExactlyElementsOf(expectedHistory);
+        assertThat(result).containsExactly(
+            new ChatHistoryMessage("user", "Hi there"),
+            new ChatHistoryMessage("assistant", "How are you?"));
     }
 
     @Test
     void testGetHistoryReturnsEmptyList() {
         String userId = "unknown-user";
-        when(chatMemoryRepository.getChatHistoryByUserId(userId)).thenReturn(List.of());
+        when(chatMemory.get(userId)).thenReturn(List.of());
 
-        List<ChatResponse> result = adapter.getHistory(userId);
+        List<ChatHistoryMessage> result = adapter.getHistory(userId);
         assertThat(result).isEmpty();
     }
 
     @Test
     void testGetHistoryCallsRepository() {
         String userId = "user789";
-        when(chatMemoryRepository.getChatHistoryByUserId(anyString())).thenReturn(List.of());
+        when(chatMemory.get(anyString())).thenReturn(List.of());
 
         adapter.getHistory(userId);
-        verify(chatMemoryRepository).getChatHistoryByUserId(userId);
+        verify(chatMemory).get(userId);
     }
 
     @Test
@@ -81,21 +96,20 @@ class ChatMemoryPersistenceAdapterTest {
         adapter.deleteHistoryById(userId1);
         adapter.deleteHistoryById(userId2);
 
-        verify(chatMemoryRepository).deleteByUserId(userId1);
-        verify(chatMemoryRepository).deleteByUserId(userId2);
+        verify(chatMemoryRepository).deleteByConversationId(userId1);
+        verify(chatMemoryRepository).deleteByConversationId(userId2);
     }
 
     @Test
     void testGetHistoryWithMultipleMessages() {
         String userId = "user-multi";
-        List<ChatResponse> multipleMessages = List.of(
-                new ChatResponse("Message 1", userId),
-                new ChatResponse("Message 2", userId),
-                new ChatResponse("Message 3", userId),
-                new ChatResponse("Message 4", userId)
-        );
-        when(chatMemoryRepository.getChatHistoryByUserId(userId)).thenReturn(multipleMessages);
-        List<ChatResponse> result = adapter.getHistory(userId);
+        when(chatMemory.get(userId)).thenReturn(List.of(
+            new UserMessage("Message 1"),
+            new AssistantMessage("Message 2"),
+            new UserMessage("Message 3"),
+            new AssistantMessage("Message 4")));
+
+        List<ChatHistoryMessage> result = adapter.getHistory(userId);
         assertThat(result).hasSize(4);
     }
 }

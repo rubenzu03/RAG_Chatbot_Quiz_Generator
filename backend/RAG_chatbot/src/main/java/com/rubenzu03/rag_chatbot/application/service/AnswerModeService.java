@@ -41,8 +41,13 @@ public class AnswerModeService {
     }
 
     public String answerSimpleQuery(String query, String conversationKey) {
+        log.info("answerSimpleQuery() conversationKey={}", conversationKey);
         return this.chatClient.prompt(query)
-                .advisors(advisor -> advisor.param(CHAT_MEMORY_CONVERSATION_ID_KEY, conversationKey))
+                .advisors(advisor -> {
+                    advisor.param(CHAT_MEMORY_CONVERSATION_ID_KEY, conversationKey);
+                    advisor.param("conversationId", conversationKey);
+                    advisor.param("conversation_id", conversationKey);
+                })
                 .call()
                 .content();
     }
@@ -59,19 +64,25 @@ public class AnswerModeService {
 
         log.info("Response generated with {} documents", rankedDocs.size());
 
-        String promptWithContext = String.format(
-                "Context:\n%s\n\nQuestion: %s",
-                context,
-                query
+        String systemPromptWithContext = String.format(
+                "%s\n\nContext from documents:\n%s",
+                ChatClientConfig.ANSWER_MODE_GENERATION_PROMPT,
+                context
         );
 
+        log.info("AnswerWithRagQuery() conversationKey={} docs={}", conversationKey, rankedDocs.size());
+        
         return chatClient.prompt()
-                .system(ChatClientConfig.ANSWER_MODE_GENERATION_PROMPT)
-                .advisors(advisor -> advisor.param(CHAT_MEMORY_CONVERSATION_ID_KEY, conversationKey))
-                .user(promptWithContext)
-                .stream()
-                .content()
-                .doOnNext(token -> debugStream(token, conversationKey));
+            .system(systemPromptWithContext)
+            .advisors(advisor -> {
+                advisor.param(CHAT_MEMORY_CONVERSATION_ID_KEY, conversationKey);
+                advisor.param("conversationId", conversationKey);
+                advisor.param("conversation_id", conversationKey);
+            })
+            .user(query)
+            .stream()
+            .content()
+            .doOnNext(token -> debugStream(token, conversationKey));
     }
 
     public String buildConversationKey(String userId, String conversationId) {

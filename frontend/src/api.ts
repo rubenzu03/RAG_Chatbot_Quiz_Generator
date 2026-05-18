@@ -12,6 +12,16 @@ const api = axios.create({
   },
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      removeToken();
+    }
+    return Promise.reject(error);
+  }
+);
+
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
@@ -22,10 +32,6 @@ export function setToken(token: string): void {
 
 export function removeToken(): void {
   localStorage.removeItem(TOKEN_KEY);
-}
-
-export function isAuthenticated(): boolean {
-  return !!getToken();
 }
 
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
@@ -40,6 +46,32 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
   } catch {
     return null;
   }
+}
+
+export function isTokenExpired(): boolean {
+  const token = getToken();
+  if (!token) return true;
+
+  const payload = decodeJwtPayload(token);
+  if (!payload) return true;
+
+  const expirationTime = payload.exp;
+  if (typeof expirationTime !== 'number') return true;
+
+  const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+  return currentTimeInSeconds >= expirationTime;
+}
+
+export function isAuthenticated(): boolean {
+  const token = getToken();
+  if (!token) return false;
+  
+  if (isTokenExpired()) {
+    removeToken();
+    return false;
+  }
+  
+  return true;
 }
 
 export function getCurrentUserEmail(): string | null {
@@ -173,7 +205,7 @@ export async function sendMessage(message: string): Promise<ChatResponse> {
   );
 }
 
-export async function getChatHistory(): Promise<ChatMessage[]> {
+export async function getChatHistory(): Promise<ChatMessage[] | null> {
   try {
     const data = await fetchJson<{ history: ChatMessage[] }>(
       '/ai/chat/history',
@@ -183,10 +215,10 @@ export async function getChatHistory(): Promise<ChatMessage[]> {
       },
       'API request failed'
     );
-    return data.history as ChatMessage[];
+    return Array.isArray(data.history) ? (data.history as ChatMessage[]) : [];
   } catch (error) {
     console.error('Error fetching chat history:', error);
-    return [];
+    return null;
   }
 }
 
