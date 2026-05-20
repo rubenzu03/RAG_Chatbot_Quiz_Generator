@@ -35,7 +35,6 @@ public class IngestionService {
     }
 
     public void ingestDocuments() {
-        //TODO: Check if documents have been already ingested
         log.info("Starting document ingestion from bucket: {}", bucketName);
         List<Document> documents = minIODocumentReader.readAllDocuments(bucketName);
         if (documents.isEmpty()) {

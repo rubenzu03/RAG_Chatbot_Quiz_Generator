@@ -23,16 +23,15 @@ public class ChatMemoryCleanupService {
     public int cleanupOldChatMemories() {
         try {
             LocalDateTime thresholdDate = LocalDateTime.now().minusDays(DAYS_THRESHOLD);
-            String formattedDate = thresholdDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            thresholdDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
             String sql = "DELETE FROM spring_ai_chat_memory WHERE created_at < ?";
             int deletedRows = jdbc.update(sql, thresholdDate);
 
             if (deletedRows > 0) {
-                logger.info("Successfully deleted {} old chat memory entries (older than {} days)", deletedRows,
-                        DAYS_THRESHOLD);
+                logSuccesfully(deletedRows, DAYS_THRESHOLD);
             } else {
-                logger.debug("No chat memory entries found older than {} days", DAYS_THRESHOLD);
+                logIncorrectly(DAYS_THRESHOLD);
             }
 
             return deletedRows;
@@ -49,9 +48,9 @@ public class ChatMemoryCleanupService {
             int deletedRows = jdbc.update(sql, thresholdDate);
 
             if (deletedRows > 0) {
-                logger.info("Successfully deleted {} chat memory entries (older than {} days)", deletedRows, days);
+                logSuccesfully(deletedRows, days);
             } else {
-                logger.debug("No chat memory entries found older than {} days", days);
+                logIncorrectly(days);
             }
 
             return deletedRows;
@@ -71,5 +70,13 @@ public class ChatMemoryCleanupService {
             logger.error("Error occurred while counting old chat memories", e);
             throw new RuntimeException("Failed to count old chat memories", e);
         }
+    }
+
+    public void logSuccesfully(int deletedRows, int days) {
+        logger.info("Successfully deleted {} chat memory entries (older than {} days)", deletedRows, days);
+    }
+
+    public void logIncorrectly(int days) {
+        logger.debug("No chat memory entries found older than {} days", days);
     }
 }

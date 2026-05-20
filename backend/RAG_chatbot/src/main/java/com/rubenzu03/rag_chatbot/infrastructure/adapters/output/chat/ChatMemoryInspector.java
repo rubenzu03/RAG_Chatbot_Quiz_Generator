@@ -1,6 +1,7 @@
 package com.rubenzu03.rag_chatbot.infrastructure.adapters.output.chat;
 
 import org.springframework.ai.chat.memory.ChatMemory;
+
 import java.lang.reflect.Method;
 
 public class ChatMemoryInspector {

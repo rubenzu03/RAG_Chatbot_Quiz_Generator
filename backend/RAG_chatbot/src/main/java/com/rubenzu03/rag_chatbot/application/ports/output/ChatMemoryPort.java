@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface ChatMemoryPort {
     void deleteAllHistory();
+
     void deleteHistoryById(String userId);
+
     List<ChatHistoryMessage> getHistory(String userId);
 }

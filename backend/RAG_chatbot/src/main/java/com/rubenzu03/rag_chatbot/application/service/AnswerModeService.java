@@ -71,18 +71,18 @@ public class AnswerModeService {
         );
 
         log.info("AnswerWithRagQuery() conversationKey={} docs={}", conversationKey, rankedDocs.size());
-        
+
         return chatClient.prompt()
-            .system(systemPromptWithContext)
-            .advisors(advisor -> {
-                advisor.param(CHAT_MEMORY_CONVERSATION_ID_KEY, conversationKey);
-                advisor.param("conversationId", conversationKey);
-                advisor.param("conversation_id", conversationKey);
-            })
-            .user(query)
-            .stream()
-            .content()
-            .doOnNext(token -> debugStream(token, conversationKey));
+                .system(systemPromptWithContext)
+                .advisors(advisor -> {
+                    advisor.param(CHAT_MEMORY_CONVERSATION_ID_KEY, conversationKey);
+                    advisor.param("conversationId", conversationKey);
+                    advisor.param("conversation_id", conversationKey);
+                })
+                .user(query)
+                .stream()
+                .content()
+                .doOnNext(token -> debugStream(token, conversationKey));
     }
 
     public String buildConversationKey(String userId, String conversationId) {

@@ -29,7 +29,7 @@ public class ChatController {
 
     @GetMapping("/api/ai/chat/history")
     public ChatHistoryResponse getChatHistory(
-            @RequestParam(name = "conversationId", required = false) String conversationId){
+            @RequestParam(name = "conversationId", required = false) String conversationId) {
         String userId = getAuthenticatedUserEmail();
         String conversationKey = buildConversationKey(userId, conversationId);
         List<ChatHistoryMessage> history = chatUseCase.getHistory(conversationKey);
@@ -38,7 +38,7 @@ public class ChatController {
 
     @DeleteMapping("/api/ai/chat/history")
     public void deleteChatHistory(
-            @RequestParam(name = "conversationId", required = false) String conversationId){
+            @RequestParam(name = "conversationId", required = false) String conversationId) {
         String userId = getAuthenticatedUserEmail();
         String conversationKey = buildConversationKey(userId, conversationId);
         chatUseCase.deleteHistory(conversationKey);
