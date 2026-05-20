@@ -12,7 +12,6 @@ export default function ProtectedRoute({ children }: Props) {
     }
     return <Navigate to="/auth" replace />;
   }
-  
+
   return <>{children}</>;
 }
-
