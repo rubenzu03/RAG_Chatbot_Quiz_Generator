@@ -116,9 +116,17 @@ def load_dataset(path):
     raise TypeError("Unsupported dataset format: expected object or array")
 
 
+def sanitize_text(text):
+    if not text:
+        return ""
+    text = re.sub(r"(?m)^\s*data:\s*", "", text)
+    text = ''.join(ch for ch in text if ch.isprintable() or ch in '\n\t')
+    return re.sub(r"\s+", " ", text).strip()
+
+
 def process_sse_line(line):
     if line.startswith("data:"):
-        return line[5:]
+        return sanitize_text(line[5:])
     return ""
 
 def embedding_similarity(answer: str, truth: str) -> float:
@@ -310,8 +318,8 @@ def main(limit=None):
                 continue
 
             # Reconstruimos la conversación tal y como nos llegó,
-            # sin hacer .strip() a todos los trozos. Extraemos solo escapes básicos si hiciera falta.
-            response_text = "".join(collected).strip()
+            # luego limpiamos el texto con la misma lógica simple que usamos en simple_query_benchmark.
+            response_text = sanitize_text("".join(collected))
 
 
             if truth:
