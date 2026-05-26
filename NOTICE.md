@@ -1,6 +1,5 @@
 # THIRD-PARTY SOFTWARE NOTICES
 
-
 This product includes software developed by third parties:
 
 Spring Boot (https://spring.io/projects/spring-boot)
