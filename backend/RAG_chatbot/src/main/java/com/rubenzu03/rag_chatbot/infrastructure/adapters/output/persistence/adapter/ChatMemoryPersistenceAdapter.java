@@ -20,7 +20,6 @@ public class ChatMemoryPersistenceAdapter implements ChatMemoryPort {
 
     private final JdbcChatMemoryRepository chatMemoryRepository;
     private final ChatMemory chatMemory;
-    private final ChatHistoryEncryptionService encryptionService;
 
     public ChatMemoryPersistenceAdapter(
             JdbcChatMemoryRepository chatMemoryRepository,
@@ -28,7 +27,6 @@ public class ChatMemoryPersistenceAdapter implements ChatMemoryPort {
             ChatHistoryEncryptionService encryptionService) {
         this.chatMemoryRepository = chatMemoryRepository;
         this.chatMemory = chatMemory;
-        this.encryptionService = encryptionService;
     }
 
     @Override

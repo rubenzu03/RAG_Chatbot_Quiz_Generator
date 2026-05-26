@@ -19,13 +19,12 @@ import static org.mockito.Mockito.when;
 class QuestionPersistenceAdapterTest {
 
     private GeneratedQuestionRepository repository;
-    private QuestionMapper mapper;
     private QuestionPersistenceAdapter adapter;
 
     @BeforeEach
     void setUp() {
         repository = mock(GeneratedQuestionRepository.class);
-        mapper = new QuestionMapper();
+        QuestionMapper mapper = new QuestionMapper();
         adapter = new QuestionPersistenceAdapter(repository, mapper);
     }
 

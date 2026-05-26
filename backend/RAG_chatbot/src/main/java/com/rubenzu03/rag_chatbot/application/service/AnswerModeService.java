@@ -20,7 +20,6 @@ public class AnswerModeService {
 
     private static final String CHAT_MEMORY_CONVERSATION_ID_KEY = "chat_memory_conversation_id";
     private static final String DEFAULT_CONVERSATION_ID = "default";
-    private final int TOP_K_SEARCH = 10;
 
     private final RetrievalService retrievalService;
     private final RAGContextBuilder ragContextBuilder;
@@ -54,6 +53,7 @@ public class AnswerModeService {
 
     public Flux<String> AnswerWithRagQuery(String query, String conversationKey) {
         Query transformedQuery = transformQueryService.transformQuery(new Query(query), conversationKey);
+        int TOP_K_SEARCH = 10;
         List<Document> rankedDocs = retrievalService.retrieveDocuments(transformedQuery, TOP_K_SEARCH);
 
         if (rankedDocs.isEmpty()) {

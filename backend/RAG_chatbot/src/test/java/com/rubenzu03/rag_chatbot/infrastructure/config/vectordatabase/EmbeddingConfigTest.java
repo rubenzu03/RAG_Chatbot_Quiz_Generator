@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class EmbeddingConfigTest {
 
-    private EmbeddingConfig config = new EmbeddingConfig();
+    private final EmbeddingConfig config = new EmbeddingConfig();
 
     @Test
     void testBatchingStrategyBeanCreation() {

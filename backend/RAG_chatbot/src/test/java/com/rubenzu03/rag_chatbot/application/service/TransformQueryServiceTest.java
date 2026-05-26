@@ -38,7 +38,6 @@ class TransformQueryServiceTest {
 
     @Test
     void testTransformQueryPreservesStructure() {
-        // Arrange
         Query originalQuery = Query.builder()
                 .text("How does clustering work?")
                 .build();
@@ -49,33 +48,27 @@ class TransformQueryServiceTest {
         when(queryTransformer.transformQuery(anyString(), anyString()))
                 .thenReturn(transformedQuery);
 
-        // Act
         Query result = service.transformQuery(originalQuery, "user456");
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.text()).isNotEmpty();
     }
 
     @Test
     void testTransformQueryWithDifferentUserId() {
-        // Arrange
         Query query = Query.builder().text("test query").build();
         Query expected = Query.builder().text("transformed query").build();
 
         when(queryTransformer.transformQuery(anyString(), anyString()))
                 .thenReturn(expected);
 
-        // Act
         Query result = service.transformQuery(query, "different-user");
 
-        // Assert
         assertThat(result.text()).isEqualTo("transformed query");
     }
 
     @Test
     void testTransformQueryWithComplexQuery() {
-        // Arrange
         Query complexQuery = Query.builder()
                 .text("How can I implement machine learning models with Python?")
                 .build();
@@ -86,10 +79,8 @@ class TransformQueryServiceTest {
         when(queryTransformer.transformQuery(anyString(), anyString()))
                 .thenReturn(simplifiedQuery);
 
-        // Act
         Query result = service.transformQuery(complexQuery, "user789");
 
-        // Assert
         assertThat(result.text()).isNotNull();
         assertThat(result.text()).contains("ML", "models");
     }

@@ -12,9 +12,6 @@ import org.springframework.ai.vectorstore.VectorStore;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentSearchModuleTest {
@@ -32,10 +29,8 @@ class DocumentSearchModuleTest {
     @Test
     void testRetrieveDocumentsWithValidQuery() {
         Query query = Query.builder().text("What is RAG?").build();
-        List<Document> expectedDocs = List.of(
-                new Document("RAG is Retrieval Augmented Generation"),
-                new Document("It improves model accuracy")
-        );
+        new Document("RAG is Retrieval Augmented Generation");
+        new Document("It improves model accuracy");
         List<Document> result = module.retrieveDocuments(query, 5, 0.5);
         assertThat(result).isNotNull();
     }

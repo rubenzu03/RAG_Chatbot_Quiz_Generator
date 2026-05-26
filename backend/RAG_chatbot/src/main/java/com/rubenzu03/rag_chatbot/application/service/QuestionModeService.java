@@ -182,27 +182,6 @@ public class QuestionModeService implements QuestionUseCase {
         return null;
     }
 
-    private String extractLegacyExplanation(String fullResponse) {
-        String lower = fullResponse.toLowerCase(Locale.ROOT);
-        int explanationStart = lower.indexOf("explanation:");
-
-        if (explanationStart >= 0) {
-            return fullResponse.substring(explanationStart + "explanation:".length()).trim();
-        }
-
-        explanationStart = lower.indexOf("explicacion:");
-        if (explanationStart >= 0) {
-            return fullResponse.substring(explanationStart + "explicacion:".length()).trim();
-        }
-
-        explanationStart = lower.indexOf("explicación:");
-        if (explanationStart >= 0) {
-            return fullResponse.substring(explanationStart + "explicación:".length()).trim();
-        }
-
-        return fullResponse.trim();
-    }
-
     private String sanitizeJson(String s) {
         if (s == null) return "";
         String trimmed = s.trim();
