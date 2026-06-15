@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OllamaModels {
 
-    @Value("${spring.ai.ollama.base-url:http://localhost:11434}")
-    private final String ollamaBaseUrl = "http://localhost:11434";
+    @Value("${spring.ai.ollama.base-url:http://host.docker.internal:11434}")
+    private String ollamaBaseUrl;
 
     @Bean
     public OllamaChatModel ollamaLlamaModel() {
