@@ -83,6 +83,21 @@ services:
     ports:
       - "8081:8081"
 
+  ollama:
+    build:
+      context: ./ollama
+      dockerfile: Dockerfile
+    container_name: rag-ollama
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/ollama:/root/.ollama
+    environment:
+      - OLLAMA_NUM_PARALLEL=4
+      - OLLAMA_NUM_THREAD=8
+      - OLLAMA_MODELS=${OLLAMA_MODELS:-llama3.2:latest nomic-embed-text}
+
   backend:
     build:
       context: ./backend/RAG_chatbot
