@@ -17,6 +17,7 @@ public class ChatMemoryService implements ChatUseCase {
     public ChatMemoryService(ChatMemoryPort chatMemoryPort) {
         this.chatMemoryPort = chatMemoryPort;
     }
+
     public void deleteAll() {
         chatMemoryPort.deleteAllHistory();
     }

@@ -60,9 +60,7 @@ public class UserPersistenceAdapter implements UserRepositoryPort {
     public void deleteByEmail(String email) {
         String normalizedEmail = userEmailEncryptionService.normalizeEmail(email);
         String emailHash = userEmailEncryptionService.hashEmail(normalizedEmail);
-        dataUserRepository.findByEmailHash(emailHash).ifPresent(user -> {
-            dataUserRepository.deleteById(user.getId());
-        });
+        dataUserRepository.findByEmailHash(emailHash).ifPresent(user -> dataUserRepository.deleteById(user.getId()));
     }
 
     private void protectEmailBeforeSave(UserEntity entity) {

@@ -35,12 +35,12 @@ public class MinIODocumentReader {
         this.minioClient = minioClient;
     }
 
-    public List<Document> readAllDocuments(String bucketName){
+    public List<Document> readAllDocuments(String bucketName) {
         List<Document> documents = new ArrayList<>();
 
         log.info("Reading documents from MinIO bucket: {}", bucketName);
 
-        try{
+        try {
             Iterable<Result<Item>> objects = minioClient.listObjects(
                     ListObjectsArgs.builder().bucket(bucketName).recursive(true).build()
             );
@@ -75,8 +75,7 @@ public class MinIODocumentReader {
                         }
 
                         log.debug("Extracted {} pages from PDF: {}", pdfDocuments.size(), item.objectName());
-                    }
-                    else if (objectName.endsWith(".txt") || objectName.endsWith(".md")) {
+                    } else if (objectName.endsWith(".txt") || objectName.endsWith(".md")) {
                         log.debug("Processing text file: {}", item.objectName());
                         String content = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
 
@@ -86,14 +85,12 @@ public class MinIODocumentReader {
                                         "file_type", "text"));
 
                         documents.add(doc);
-                    }
-                    else {
+                    } else {
                         log.warn("Unsupported file type for: {}. Skipping.", item.objectName());
                     }
                 }
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             log.error("Failed to read documents from MinIO bucket '{}': {}", bucketName, e.getMessage(), e);
             throw new RuntimeException(e);
         }

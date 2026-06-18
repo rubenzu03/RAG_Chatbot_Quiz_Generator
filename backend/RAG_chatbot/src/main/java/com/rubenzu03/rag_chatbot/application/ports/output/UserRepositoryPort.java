@@ -6,9 +6,13 @@ import java.util.Optional;
 
 public interface UserRepositoryPort {
     UserDTO save(UserDTO user);
+
     Optional<UserDTO> findByEmail(String email);
+
     Optional<UserDTO> findById(Long id);
+
     boolean existsByEmail(String email);
+
     void deleteByEmail(String email);
 }
 

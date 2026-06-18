@@ -49,10 +49,6 @@ MODEL_NAME= resolve_path_parent(os.environ.get("MODEL_NAME"))
 BENCH_CONVERSATION_PREFIX = os.environ.get("BENCH_CONVERSATION_PREFIX", "simple")
 BENCH_ISOLATE_CONVERSATIONS = os.environ.get("BENCH_ISOLATE_CONVERSATIONS", "true").lower() in ("1", "true", "yes")
 
-# OPCIONES MODELO
-#   cross-encoder/nli-MiniLM2-L6-H768   ~90 MB  ← default, fast
-#   cross-encoder/nli-deberta-v3-small   ~180 MB ← more accurate
-#   facebook/bart-large-mnli             ~1.6 GB ← most accurate
 NLI_MODEL_NAME = os.environ.get("NLI_MODEL", "facebook/bart-large-mnli")
 BERT_SCORE_MODEL = os.environ.get("BERT_SCORE_MODEL", "distilroberta-base")
 BERT_SCORE_DEVICE = os.environ.get("BERT_SCORE_DEVICE", "cpu").lower()
@@ -90,7 +86,7 @@ try:
     NLI_PIPE = hf_pipeline(
         "text-classification",
         model=NLI_MODEL_NAME,
-        top_k=None,   # return all three labels (ENTAILMENT / NEUTRAL / CONTRADICTION)
+        top_k=None, 
         device=nli_device,
     )
     print(f"[init] NLI model ready on {'cuda' if nli_device == 0 else 'cpu'}")
@@ -137,37 +133,7 @@ def extract_response_text(payload: str) -> str:
     if not payload:
         return ""
 
-    cleaned = sanitize_text(payload)
-    if not cleaned:
-        return ""
-
-    try:
-        obj = json.loads(cleaned)
-    except Exception:
-        return cleaned
-
-    if isinstance(obj, str):
-        return sanitize_text(obj)
-
-    if isinstance(obj, dict):
-        for key in ("response", "answer", "result", "text", "content", "message"):
-            value = obj.get(key)
-            if isinstance(value, str):
-                return sanitize_text(value)
-            if isinstance(value, dict) and isinstance(value.get("content"), str):
-                return sanitize_text(value["content"])
-
-        choices = obj.get("choices")
-        if isinstance(choices, list) and choices:
-            first = choices[0]
-            if isinstance(first, dict):
-                if isinstance(first.get("text"), str):
-                    return sanitize_text(first["text"])
-                message = first.get("message")
-                if isinstance(message, dict) and isinstance(message.get("content"), str):
-                    return sanitize_text(message["content"])
-
-    return cleaned
+    return sanitize_text(payload)
 
 
 def embedding_similarity(answer: str, truth: str) -> float:
@@ -214,8 +180,6 @@ def _nli_one(premise: str, hypothesis: str) -> float:
         f"{premise[:MAX_CHARS]} [SEP] {hypothesis[:MAX_CHARS]}",
         truncation=True,
     )
-
-    # transformers may return list[dict] or list[list[dict]] depending on version/settings
     if isinstance(results, list) and results and isinstance(results[0], list):
         results = results[0]
     if isinstance(results, dict):
@@ -251,7 +215,6 @@ def nli_judge(answer: str, truth: str) -> float | None:
         return None
 
 
-# Prioritize NLI for correctness, but also consider BERTScore for partial credit and embedding similarity as a baseline.
 def compute_composite(
     embed_sim: float,
     bert: float | None,
@@ -354,21 +317,21 @@ def main(limit=None):
                 s_comp  = compute_composite(s_embed, s_bert, s_nli)
 
                 print(
-                    f"  embed={s_embed:.4f}"
-                    f"  bert={s_bert if s_bert is not None else 'n/a'}"
-                    f"  nli={s_nli if s_nli is not None else 'n/a'}"
-                    f"  composite={s_comp}"
+                    f" embed={s_embed:.4f}"
+                    f" bert={s_bert if s_bert is not None else 'n/a'}"
+                    f" nli={s_nli if s_nli is not None else 'n/a'}"
+                    f" composite={s_comp}"
                 )
             else:
                 s_embed = s_bert = s_nli = s_comp = None
 
             writer.writerow({
-                "timestamp":       datetime.now(timezone.utc).isoformat(),
-                "dataset":         DATASET,
-                "record_index":    index,
-                "query":           query,
-                "response":        response_text,
-                "truth":           truth or "",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "dataset":DATASET,
+                "record_index":index,
+                "query":query,
+                "response":response_text,
+                "truth": truth or "",
                 "score_embed":     f"{s_embed:.4f}" if s_embed is not None else "",
                 "score_bert":      f"{s_bert:.4f}"  if s_bert  is not None else "",
                 "score_nli":       f"{s_nli:.4f}"   if s_nli   is not None else "n/a",

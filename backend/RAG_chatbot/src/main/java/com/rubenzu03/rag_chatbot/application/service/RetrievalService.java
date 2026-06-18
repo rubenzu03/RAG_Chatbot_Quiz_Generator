@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Service
 public class RetrievalService {
-    private static Logger log = LoggerFactory.getLogger(RetrievalService.class);
+    private static final Logger log = LoggerFactory.getLogger(RetrievalService.class);
 
     private final TranslationQueryModule translationQueryModule;
     private final QueryExpansionModule queryExpansionModule;

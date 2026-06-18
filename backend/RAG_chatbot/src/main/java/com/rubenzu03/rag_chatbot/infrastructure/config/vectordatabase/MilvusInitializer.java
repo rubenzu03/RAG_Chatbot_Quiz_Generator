@@ -14,6 +14,7 @@ import io.milvus.param.index.CreateIndexParam;
 import io.milvus.param.collection.LoadCollectionParam;
 
 import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,7 +53,7 @@ public class MilvusInitializer implements ApplicationRunner {
     private boolean dropCollectionOnStartup;
 
     @Override
-    public void run(ApplicationArguments args){
+    public void run(ApplicationArguments args) {
         log.info("Initializing Milvus collection '{}' on {}:{}", collectionName, host, port);
 
         MilvusServiceClient milvusClient = null;
@@ -87,7 +88,7 @@ public class MilvusInitializer implements ApplicationRunner {
         }
     }
 
-    private void createFieldsAndSchema(MilvusClient milvusClient){
+    private void createFieldsAndSchema(MilvusClient milvusClient) {
         FieldType docIdField = FieldType.newBuilder()
                 .withName("doc_id")
                 .withPrimaryKey(true)
@@ -125,7 +126,7 @@ public class MilvusInitializer implements ApplicationRunner {
         milvusClient.createCollection(createCollectionParam);
     }
 
-    private void createIndex(MilvusClient milvusClient){
+    private void createIndex(MilvusClient milvusClient) {
         milvusClient.createIndex(CreateIndexParam.newBuilder()
                 .withCollectionName(collectionName)
                 .withFieldName("embedding")
@@ -136,13 +137,13 @@ public class MilvusInitializer implements ApplicationRunner {
                 .build());
     }
 
-    private void loadCollection(MilvusClient milvusClient){
+    private void loadCollection(MilvusClient milvusClient) {
         milvusClient.loadCollection(LoadCollectionParam.newBuilder()
                 .withCollectionName(collectionName)
                 .build());
     }
 
-    private void dropCollection(MilvusClient milvusClient, String collectionName){
+    private void dropCollection(MilvusClient milvusClient, String collectionName) {
         log.warn("Dropping existing collection '{}' as milvus.drop-collection-on-startup=true", collectionName);
         milvusClient.dropCollection(DropCollectionParam.newBuilder()
                 .withCollectionName(collectionName)

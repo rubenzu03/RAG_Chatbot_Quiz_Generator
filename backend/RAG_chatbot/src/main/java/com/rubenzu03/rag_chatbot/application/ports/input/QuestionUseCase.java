@@ -6,6 +6,7 @@ import com.rubenzu03.rag_chatbot.domain.dto.QuestionResponse;
 
 public interface QuestionUseCase {
     QuestionResponse generateQuestion();
+
     QuestionEvaluationResponse evaluateAnswer(QuestionEvaluationRequest questionEvaluationRequest);
 }
 

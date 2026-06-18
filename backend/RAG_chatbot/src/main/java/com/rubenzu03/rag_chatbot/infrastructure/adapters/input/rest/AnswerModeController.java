@@ -27,7 +27,7 @@ public class AnswerModeController {
     @PostMapping("/api/ai/simplequery")
     public ResponseEntity<ChatResponse> askQuery(
             @RequestParam(name = "query") String query,
-            @RequestParam(name = "conversationId", required = false) String conversationId){
+            @RequestParam(name = "conversationId", required = false) String conversationId) {
 
         String userId = getAuthenticatedUserEmail();
         String conversationKey = answerModeService.buildConversationKey(userId, conversationId);

@@ -28,7 +28,7 @@ public class JwtUtil {
         this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String username){
+    public String generateToken(String username) {
         Date now = new Date();
         return Jwts.builder()
                 .subject(username)
@@ -38,7 +38,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String getUsernameFromToken(String token){
+    public String getUsernameFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
@@ -47,24 +47,20 @@ public class JwtUtil {
                 .getSubject();
     }
 
-    public boolean validateToken(String token){
+    public boolean validateToken(String token) {
         try {
             Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token);
             return true;
-        }
-        catch (SecurityException e){
+        } catch (SecurityException e) {
             System.out.println("Invalid signature: " + e.getMessage());
-        }
-        catch (MalformedJwtException e){
+        } catch (MalformedJwtException e) {
             System.out.println("Invalid token: " + e.getMessage());
-        }
-        catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             System.out.println("Expired token: " + e.getMessage());
-        }
-        catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             System.out.println("JWT claims string is empty.");
         }
         return false;

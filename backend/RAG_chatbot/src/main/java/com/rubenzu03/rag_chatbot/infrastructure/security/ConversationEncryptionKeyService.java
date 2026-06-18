@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Base64;
 
 @Service
 public class ConversationEncryptionKeyService {

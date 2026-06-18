@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-//TODO: Move to Docker API URL
 const API_BASE_URL = 'http://localhost:8080/api';
 
 const TOKEN_KEY = 'auth_token';
@@ -222,7 +221,6 @@ export async function getChatHistory(): Promise<ChatMessage[] | null> {
   }
 }
 
-// ── Question Mode API ──
 
 export interface QuestionResponse {
   questionId: string;
@@ -263,8 +261,6 @@ export async function evaluateAnswer(req: EvaluationRequest): Promise<Evaluation
     'Evaluate answer failed'
   );
 }
-
-// ── Chat / RAG API ──
 
 export async function streamRagQuery(
   message: string,

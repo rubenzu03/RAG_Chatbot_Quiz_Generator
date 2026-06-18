@@ -24,6 +24,7 @@ import java.text.Normalizer;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,7 +146,6 @@ public class QuestionModeService implements QuestionUseCase {
         }
 
         if (result == null) {
-            // If result could not be normalized from the JSON, treat as INCORRECT to avoid leniency.
             return new QuestionEvaluationResponse("INCORRECT", "Evaluator returned invalid or missing 'result' field.");
         }
 
@@ -182,45 +182,15 @@ public class QuestionModeService implements QuestionUseCase {
         return null;
     }
 
-    private String extractLegacyExplanation(String fullResponse) {
-        String lower = fullResponse.toLowerCase(Locale.ROOT);
-        int explanationStart = lower.indexOf("explanation:");
-
-        if (explanationStart >= 0) {
-            return fullResponse.substring(explanationStart + "explanation:".length()).trim();
-        }
-
-        explanationStart = lower.indexOf("explicacion:");
-        if (explanationStart >= 0) {
-            return fullResponse.substring(explanationStart + "explicacion:".length()).trim();
-        }
-
-        explanationStart = lower.indexOf("explicación:");
-        if (explanationStart >= 0) {
-            return fullResponse.substring(explanationStart + "explicación:".length()).trim();
-        }
-
-        return fullResponse.trim();
-    }
-
-    /**
-     * Try to clean typical LLM formatting around JSON outputs so we can parse them reliably.
-     * - remove markdown code fences (``` or ```json)
-     * - extract first {...} block
-     * - replace smart quotes with straight quotes
-     */
     private String sanitizeJson(String s) {
         if (s == null) return "";
         String trimmed = s.trim();
 
-        // If the model returned a fenced code block like ```json\n{...}\n```,
-        // extract the content inside the first pair of triple backticks instead of removing it.
         int fenceStart = trimmed.indexOf("```");
         if (fenceStart >= 0) {
             int fenceEnd = trimmed.indexOf("```", fenceStart + 3);
             if (fenceEnd > fenceStart) {
                 String inside = trimmed.substring(fenceStart + 3, fenceEnd).trim();
-                // If the inside starts with a language token like "json", remove that first line.
                 int firstNewline = inside.indexOf('\n');
                 if (firstNewline > 0) {
                     String firstLine = inside.substring(0, firstNewline).trim();
@@ -232,16 +202,13 @@ public class QuestionModeService implements QuestionUseCase {
             }
         }
 
-        // Remove any remaining single backticks
         trimmed = trimmed.replace("`", "");
 
-        // Replace Unicode smart quotes with ASCII equivalents
         trimmed = trimmed.replace('‘', '\'')
                 .replace('’', '\'')
                 .replace('“', '"')
                 .replace('”', '"');
 
-        // Try to extract the first JSON object block if present
         int first = trimmed.indexOf('{');
         int last = trimmed.lastIndexOf('}');
         if (first >= 0 && last > first) {

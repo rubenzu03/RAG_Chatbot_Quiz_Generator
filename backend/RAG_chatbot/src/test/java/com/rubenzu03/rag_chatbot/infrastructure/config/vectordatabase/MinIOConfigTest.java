@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MinIOConfigTest {
 
-    private MinIOConfig config = new MinIOConfig();
+    private final MinIOConfig config = new MinIOConfig();
 
     @Test
     void testMinioClientBeanCreation() {

@@ -50,7 +50,7 @@ class QueryTransformerModuleTest {
         when(chatMemory.get("conv123")).thenReturn(history);
 
         assertThat(chatMemory.get("conv123")).hasSize(2);
-        assertThat(chatMemory.get("conv123").get(0)).isInstanceOf(UserMessage.class);
+        assertThat(chatMemory.get("conv123").getFirst()).isInstanceOf(UserMessage.class);
     }
 
     @Test

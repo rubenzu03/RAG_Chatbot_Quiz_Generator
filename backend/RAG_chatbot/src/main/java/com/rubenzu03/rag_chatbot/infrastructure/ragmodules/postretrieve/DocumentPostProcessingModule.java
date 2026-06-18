@@ -14,7 +14,7 @@ public class DocumentPostProcessingModule {
     private static final Logger log = LoggerFactory.getLogger(DocumentPostProcessingModule.class);
 
     public List<Document> rankAndFilterDocuments(List<Document> documents,
-                                                  double similarityThreshold, int topK) {
+                                                 double similarityThreshold, int topK) {
 
         Map<String, Document> uniqueDocs = new LinkedHashMap<>();
         for (Document doc : documents) {

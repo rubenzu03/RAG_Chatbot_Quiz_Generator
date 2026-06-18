@@ -14,11 +14,21 @@ const variantClasses: Record<AlertVariant, string> = {
   info: 'bg-blue-500/20 text-blue-200',
 };
 
-export default function Alert({ children, variant = 'info', className = '', ...props }: AlertProps) {
+export default function Alert({
+  children,
+  variant = 'info',
+  className = '',
+  ...props
+}: AlertProps) {
   const alertType = variant === 'error' ? 'alert' : 'status';
   const ariaLive = variant === 'error' ? 'assertive' : 'polite';
   return (
-    <div role={alertType} aria-live={ariaLive} className={['rounded-lg p-3 text-sm', variantClasses[variant], className].join(' ')} {...props}>
+    <div
+      role={alertType}
+      aria-live={ariaLive}
+      className={['rounded-lg p-3 text-sm', variantClasses[variant], className].join(' ')}
+      {...props}
+    >
       {children}
     </div>
   );

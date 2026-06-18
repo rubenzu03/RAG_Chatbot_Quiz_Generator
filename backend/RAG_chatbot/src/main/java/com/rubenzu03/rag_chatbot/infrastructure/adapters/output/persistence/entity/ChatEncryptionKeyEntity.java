@@ -19,7 +19,7 @@ public class ChatEncryptionKeyEntity {
     @Column(nullable = false, updatable = false)
     private String conversationId;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String keyMaterial;
 
     @Column(nullable = false)

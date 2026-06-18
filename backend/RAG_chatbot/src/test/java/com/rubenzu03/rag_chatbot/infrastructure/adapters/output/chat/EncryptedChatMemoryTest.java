@@ -35,13 +35,11 @@ class EncryptedChatMemoryTest {
 
     @Test
     void testEncryptedChatMemoryCreation() {
-        // Assert - object is created in setUp
         assertThat(encryptedMemory).isNotNull();
     }
 
     @Test
     void testGetDecryptsMessages() {
-        // Arrange
         String conversationId = "conv-1";
         List<Message> encryptedMessages = List.of(
                 new UserMessage("encrypted-1"),
@@ -50,10 +48,8 @@ class EncryptedChatMemoryTest {
         when(encryptionService.decrypt(anyString(), anyString()))
                 .thenReturn("decrypted-content");
 
-        // Act
         List<Message> result = encryptedMemory.get(conversationId);
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result).hasSize(2);
     }

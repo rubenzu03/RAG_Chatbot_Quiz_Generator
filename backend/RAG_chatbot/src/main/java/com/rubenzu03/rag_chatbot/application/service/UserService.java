@@ -41,7 +41,7 @@ public class UserService implements ManageUserUseCase {
 
     @Override
     public UserDTO registerUser(UserDTO userDto) {
-        if (checkUserExists(userDto.getEmail())){
+        if (checkUserExists(userDto.getEmail())) {
             throw new RuntimeException("User already exists");
         }
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
@@ -57,7 +57,7 @@ public class UserService implements ManageUserUseCase {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public boolean checkUserExists(String email){
+    public boolean checkUserExists(String email) {
         return userRepositoryPort.existsByEmail(email);
     }
 
