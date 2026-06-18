@@ -1,5 +1,0 @@
-services:
-  ollama:
-    runtime: nvidia
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
