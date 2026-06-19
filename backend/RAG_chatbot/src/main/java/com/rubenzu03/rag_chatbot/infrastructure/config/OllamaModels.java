@@ -1,5 +1,6 @@
 package com.rubenzu03.rag_chatbot.infrastructure.config;
 
+import lombok.Setter;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaChatOptions;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class OllamaModels {
 
     @Value("${spring.ai.ollama.base-url:http://host.docker.internal:11434}")
+    @Setter
     private String ollamaBaseUrl;
 
     @Bean
@@ -20,11 +22,12 @@ public class OllamaModels {
                 .build();
         return OllamaChatModel.builder()
                 .ollamaApi(ollamaApi)
-                .defaultOptions(
+                .options(
                         OllamaChatOptions.builder()
                                 .model("llama3.2:latest")
-                                .temperature(0.0)
-                                .build())
+                                .temperature(0.0).build())
                 .build();
     }
+
+
 }
