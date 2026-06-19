@@ -23,7 +23,7 @@ public class OllamaModels {
                 .options(
                         OllamaChatOptions.builder()
                                 .model("llama3.2:latest")
-                                .temperature(0.0).enableThinking().build())
+                                .temperature(0.0).build())
                 .build();
     }
 }
