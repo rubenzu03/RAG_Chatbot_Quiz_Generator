@@ -20,11 +20,10 @@ public class OllamaModels {
                 .build();
         return OllamaChatModel.builder()
                 .ollamaApi(ollamaApi)
-                .defaultOptions(
+                .options(
                         OllamaChatOptions.builder()
                                 .model("llama3.2:latest")
-                                .temperature(0.0)
-                                .build())
+                                .temperature(0.0).enableThinking().build())
                 .build();
     }
 }

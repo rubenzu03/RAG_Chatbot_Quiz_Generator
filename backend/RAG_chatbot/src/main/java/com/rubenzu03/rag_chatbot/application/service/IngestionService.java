@@ -30,7 +30,7 @@ public class IngestionService {
 
     public IngestionService(MinIODocumentReader minIODocumentReader, VectorStore vectorStore) {
         this.minIODocumentReader = minIODocumentReader;
-        this.textSplitter = new TokenTextSplitter(true);
+        this.textSplitter = TokenTextSplitter.builder().withKeepSeparator(true).build();
         this.vectorStore = vectorStore;
     }
 
