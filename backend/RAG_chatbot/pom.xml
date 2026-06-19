@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.rubenzu03</groupId>
     <artifactId>RAG_chatbot</artifactId>
-    <version>1.0.2</version>
+    <version>2.0.0</version>
     <name>RAG_chatbot</name>
     <description>RAG_chatbot</description>
     <url/>
