@@ -11,6 +11,8 @@ class OllamaModelsTest {
 
     @Test
     void ollamaLlamaModel_createsBeanInstance() {
+        String baseUrl = "http://localhost:11434";
+        config.setOllamaBaseUrl(baseUrl);
         OllamaChatModel model = config.ollamaLlamaModel();
 
         assertThat(model).isNotNull();
