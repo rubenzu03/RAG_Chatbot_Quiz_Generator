@@ -171,7 +171,7 @@
             <dependency>
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-netty-shaded</artifactId>
-                <version>1.80.0</version>
+                <version>1.82.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.protobuf</groupId>
